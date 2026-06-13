@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  alpine-toolbox:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        # 自定义 root 密码（可选，默认 root123）
+        ROOT_PASSWORD: root123
+    container_name: alpine-toolbox
+    restart: unless-stopped
+    # 只暴露 1 个端口给外部
+    ports:
+      - "8080:80"      # 映射到宿主机 8080（可修改为你平台分配的端口）
+    volumes:
+      # 持久化数据目录
+      - ./data:/srv
+      # 持久化 File Browser 数据库
+      - ./fb-data:/etc/filebrowser
+    # 资源限制（适配 1核/250MB/1GB 环境）
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 200M
