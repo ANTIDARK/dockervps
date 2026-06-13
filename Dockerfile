@@ -24,7 +24,7 @@ RUN ssh-keygen -A \
 
 # 下载并安装 File Browser（使用固定版本，避免解析失败）
 RUN curl -fsSL -o /tmp/filebrowser.tar.gz \
-    "https://github.com/filebrowser/filebrowser/releases/download/v2.32.0/filebrowser-v2.32.0-linux-amd64.tar.gz" \
+    "https://github.com/filebrowser/filebrowser/releases/download/v2.63.15/linux-amd64-filebrowser.tar.gz" \
     && tar -xzf /tmp/filebrowser.tar.gz -C /usr/local/bin filebrowser \
     && chmod +x /usr/local/bin/filebrowser \
     && rm -f /tmp/filebrowser.tar.gz
@@ -36,7 +36,7 @@ RUN mkdir -p /srv /etc/filebrowser \
 
 # 下载并安装 Caddy（使用固定版本）
 RUN curl -fsSL -o /usr/local/bin/caddy \
-    "https://github.com/caddyserver/caddy/releases/download/v2.9.1/caddy_2.9.1_linux_amd64" \
+    "https://github.com/caddyserver/caddy/releases/download/v2.11.4/caddy_2.11.4_linux_amd64.tar.gz" \
     && chmod +x /usr/local/bin/caddy
 
 # 创建导航页目录
