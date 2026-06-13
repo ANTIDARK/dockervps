@@ -10,10 +10,12 @@ RUN apk add --no-cache \
     && rm -rf /var/cache/apk/*
 
 # 生成 root 初始密码（默认: root123）
-ARG ROOT_PASSWORD=root123
-ARG FILE_USER=admin
-ARG FILE_PASSWORD=admin
-#ROOT_PASSWORD=${ROOT_PASSWORD:-root123}
+#ARG ROOT_PASSWORD=root123
+#ARG FILE_USER=admin
+#ARG FILE_PASSWORD=admin
+ENV ROOT_PASSWORD=${ROOT_PASSWORD:-root123}
+    FILE_USER=${FILE_USER:-admin}
+    FILE_PASSWORD=${FILE_PASSWORD:-admin}
 RUN echo "root:${ROOT_PASSWORD}" | chpasswd
 
 # 配置 SSH
@@ -28,19 +30,6 @@ RUN curl -fsSL -o /tmp/filebrowser.tar.gz \
     && tar -xzf /tmp/filebrowser.tar.gz -C /usr/local/bin filebrowser \
     && chmod +x /usr/local/bin/filebrowser \
     && rm -f /tmp/filebrowser.tar.gz
-
-# 创建必要目录
-mkdir -p /srv /etc/filebrowser
-
-# 初始化 File Browser（如果数据库不存在）
-if [ ! -f /etc/filebrowser/filebrowser.db ]; then
-    echo "[*] 初始化 File Browser 数据库..."
-    filebrowser config init --database /etc/filebrowser/filebrowser.db
-    filebrowser users add admin admin --perm.admin --database /etc/filebrowser/filebrowser.db
-    echo "[*] File Browser 已初始化"
-else
-    echo "[*] File Browser 数据库已存在，跳过初始化"
-fi
 
 
 # 下载并安装 Caddy（使用固定版本）
@@ -234,6 +223,20 @@ echo "  Root 密码   : ${ROOT_PASSWORD:-root123}"
 echo "  FileBrowser : admin / admin"
 echo "========================================"
 echo ""
+
+# 创建必要目录
+mkdir -p /srv /etc/filebrowser
+
+# 初始化 File Browser（如果数据库不存在）
+if [ ! -f /etc/filebrowser/filebrowser.db ]; then
+    echo "[*] 初始化 File Browser 数据库..."
+    filebrowser config init --database /etc/filebrowser/filebrowser.db
+    filebrowser users add $FILE_PASSWORD $FILE_PASSWORD --perm.admin --database /etc/filebrowser/filebrowser.db
+    echo "[*] File Browser 已初始化"
+else
+    echo "[*] File Browser 数据库已存在，跳过初始化"
+fi
+
 
 # 启动 SSHD（内部使用，不暴露端口）
 echo "[*] 启动 SSHD 服务（内部）..."
