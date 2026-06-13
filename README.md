@@ -67,10 +67,4 @@ docker compose up -d --build
 | Alpine 基础 | ~20MB |
 | **合计** | **~80MB** |
 
-在你的 250MB 限制内非常宽松。
-
 ---
-
-下载文件：
-- [Dockerfile](sandbox:///mnt/agents/output/Dockerfile)
-- [docker-compose.yml](sandbox:///mnt/agents/output/docker-compose.yml)
