@@ -11,6 +11,9 @@ RUN apk add --no-cache \
 
 # 生成 root 初始密码（默认: root123）
 ARG ROOT_PASSWORD=root123
+ARG FILE_USER=admin
+ARG FILE_PASSWORD=admin
+#ROOT_PASSWORD=${ROOT_PASSWORD:-root123}
 RUN echo "root:${ROOT_PASSWORD}" | chpasswd
 
 # 配置 SSH
@@ -29,7 +32,7 @@ RUN FB_VERSION=$(curl -s https://api.github.com/repos/filebrowser/filebrowser/re
 # 初始化 File Browser 配置
 RUN mkdir -p /srv /etc/filebrowser \
     && filebrowser config init --database /etc/filebrowser/filebrowser.db \
-    && filebrowser users add admin admin --perm.admin --database /etc/filebrowser/filebrowser.db
+    && filebrowser users add $FILE_USER $FILE_PASSWORD --perm.admin --database /etc/filebrowser/filebrowser.db
 
 # 下载并安装 Caddy（单文件反向代理，自动 HTTPS）
 RUN curl -L -o /usr/local/bin/caddy "https://github.com/caddyserver/caddy/releases/latest/download/caddy_linux_amd64" \
