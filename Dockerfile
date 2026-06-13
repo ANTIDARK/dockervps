@@ -32,12 +32,6 @@ RUN curl -fsSL -o /tmp/filebrowser.tar.gz \
     && chmod +x /usr/local/bin/filebrowser \
     && rm -f /tmp/filebrowser.tar.gz
 
-
-# 下载并安装 Caddy（使用固定版本）
-#RUN curl -fsSL -o /usr/local/bin/caddy \
-    "https://github.com/caddyserver/caddy/releases/download/v2.11.4/caddy_2.11.4_linux_amd64.tar.gz" \
-    && chmod +x /usr/local/bin/caddy
-
 # 创建导航页目录和 Caddy 配置目录
 RUN mkdir -p /var/www/html /etc/caddy
 
