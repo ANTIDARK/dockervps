@@ -32,6 +32,14 @@ RUN curl -fsSL -o /tmp/filebrowser.tar.gz \
     && chmod +x /usr/local/bin/filebrowser \
     && rm -f /tmp/filebrowser.tar.gz
 
+
+# 下载并安装 Caddy（使用固定版本）
+#RUN curl -fsSL -o /tmp/caddy.tar.gz \
+    #"https://github.com/caddyserver/caddy/releases/download/v2.11.4/caddy_2.11.4_linux_amd64.tar.gz" \
+    #&& tar -xzf /tmp/caddy.tar.gz -C /usr/local/bin caddy
+    #&& chmod +x /usr/local/bin/caddy
+    #&& rm -f /tmp/caddy.tar.gz
+
 # 创建导航页目录和 Caddy 配置目录
 RUN mkdir -p /var/www/html /etc/caddy
 
@@ -210,7 +218,7 @@ echo "[*] 启动 SSHD 服务（内部）..."
 
 # 启动 TTYD（监听 localhost:7681，通过 Caddy 反向代理暴露）
 echo "[*] 启动 TTYD 服务..."
-ttyd -p 80 -W --base-path /ttyd /bin/login &
+ttyd -p 7681 -W --base-path /ttyd /bin/login &
 
 # 启动 File Browser（监听 localhost:8080，通过 Caddy 反向代理暴露）
 echo "[*] 启动 File Browser..."
@@ -225,7 +233,7 @@ sleep 2
 
 # 启动 Caddy 反向代理（监听 :80，暴露给外部）
 echo "[*] 启动 Caddy 反向代理..."
-#caddy run --config /etc/caddy/Caddyfile &
+caddy run --config /etc/caddy/Caddyfile &
 
 echo ""
 echo "[*] 所有服务已启动"
