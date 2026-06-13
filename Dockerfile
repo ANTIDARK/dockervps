@@ -13,8 +13,8 @@ RUN apk add --no-cache \
 #ARG ROOT_PASSWORD=root123
 #ARG FILE_USER=admin
 #ARG FILE_PASSWORD=admin
-ENV ROOT_PASSWORD=${ROOT_PASSWORD:-root123}
-    FILE_USER=${FILE_USER:-admin}
+ENV ROOT_PASSWORD=${ROOT_PASSWORD:-root123} \
+    FILE_USER=${FILE_USER:-admin} \
     FILE_PASSWORD=${FILE_PASSWORD:-admin}
 RUN echo "root:${ROOT_PASSWORD}" | chpasswd
 
