@@ -29,10 +29,19 @@ RUN curl -fsSL -o /tmp/filebrowser.tar.gz \
     && chmod +x /usr/local/bin/filebrowser \
     && rm -f /tmp/filebrowser.tar.gz
 
-# 初始化 File Browser 配置
-RUN mkdir -p /srv /etc/filebrowser \
-    && filebrowser config init --database /etc/filebrowser/filebrowser.db \
-    && filebrowser users add $FILE_USER $FILE_PASSWORD --perm.admin --database /etc/filebrowser/filebrowser.db
+# 创建必要目录
+mkdir -p /srv /etc/filebrowser
+
+# 初始化 File Browser（如果数据库不存在）
+if [ ! -f /etc/filebrowser/filebrowser.db ]; then
+    echo "[*] 初始化 File Browser 数据库..."
+    filebrowser config init --database /etc/filebrowser/filebrowser.db
+    filebrowser users add admin admin --perm.admin --database /etc/filebrowser/filebrowser.db
+    echo "[*] File Browser 已初始化"
+else
+    echo "[*] File Browser 数据库已存在，跳过初始化"
+fi
+
 
 # 下载并安装 Caddy（使用固定版本）
 RUN curl -fsSL -o /usr/local/bin/caddy \
