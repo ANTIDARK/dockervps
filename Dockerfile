@@ -22,9 +22,9 @@ RUN ssh-keygen -A \
     && echo "PasswordAuthentication yes" >> /etc/ssh/sshd_config \
     && echo "PubkeyAuthentication yes" >> /etc/ssh/sshd_config
 
-# 下载并安装 File Browser
-RUN FB_VERSION=$(curl -s https://api.github.com/repos/filebrowser/filebrowser/releases/latest | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/') \
-    && curl -L -o /tmp/filebrowser.tar.gz "https://github.com/filebrowser/filebrowser/releases/download/${FB_VERSION}/filebrowser-${FB_VERSION}-linux-amd64.tar.gz" \
+# 下载并安装 File Browser（使用固定版本，避免解析失败）
+RUN curl -fsSL -o /tmp/filebrowser.tar.gz \
+    "https://github.com/filebrowser/filebrowser/releases/download/v2.32.0/filebrowser-v2.32.0-linux-amd64.tar.gz" \
     && tar -xzf /tmp/filebrowser.tar.gz -C /usr/local/bin filebrowser \
     && chmod +x /usr/local/bin/filebrowser \
     && rm -f /tmp/filebrowser.tar.gz
@@ -34,8 +34,9 @@ RUN mkdir -p /srv /etc/filebrowser \
     && filebrowser config init --database /etc/filebrowser/filebrowser.db \
     && filebrowser users add $FILE_USER $FILE_PASSWORD --perm.admin --database /etc/filebrowser/filebrowser.db
 
-# 下载并安装 Caddy（单文件反向代理，自动 HTTPS）
-RUN curl -L -o /usr/local/bin/caddy "https://github.com/caddyserver/caddy/releases/latest/download/caddy_linux_amd64" \
+# 下载并安装 Caddy（使用固定版本）
+RUN curl -fsSL -o /usr/local/bin/caddy \
+    "https://github.com/caddyserver/caddy/releases/download/v2.9.1/caddy_2.9.1_linux_amd64" \
     && chmod +x /usr/local/bin/caddy
 
 # 创建导航页目录
