@@ -118,6 +118,9 @@ cat > /etc/caddy/Caddyfile << CADDYCFG
 }
 CADDYCFG
 
+# 创建导航页目录（运行时创建，解决目录不存在问题）
+mkdir -p /var/www/html
+
 # 创建导航页（动态生成，显示当前用户信息）
 cat > /var/www/html/index.html << HTMLEND
 <!DOCTYPE html>
