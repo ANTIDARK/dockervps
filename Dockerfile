@@ -10,7 +10,6 @@ RUN apk add --no-cache \
     curl \
     tzdata \
     bash \
-    sudo \
     tar \
     unzip \
     && rm -rf /var/cache/apk/*
@@ -58,22 +57,6 @@ echo "  sudo 权限   : 免密码 sudo"
 echo "========================================"
 echo ""
 
-# 创建自定义用户（如果不存在）
-if ! id "${USER_NAME}" &>/dev/null; then
-    echo "[*] 创建用户 ${USER_NAME}..."
-    adduser -D -s /bin/bash "${USER_NAME}"
-    echo "${USER_NAME}:${USER_PASS}" | chpasswd
-
-    # 加入 sudo 组并配置免密码 sudo
-    adduser "${USER_NAME}" wheel 2>/dev/null || true
-    echo "${USER_NAME} ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
-
-    echo "[*] 用户 ${USER_NAME} 创建完成，已配置免密码 sudo"
-else
-    echo "[*] 用户 ${USER_NAME} 已存在"
-    # 更新密码
-    echo "${USER_NAME}:${USER_PASS}" | chpasswd
-fi
 
 # 创建文件管理目录
 mkdir -p /srv/dufs
@@ -197,11 +180,6 @@ cat > /var/www/html/index.html << HTMLEND
                 <p>基于 dufs 的网页文件管理器，支持上传下载编辑</p>
             </a>
         </div>
-        <div class="info">
-            <p>&#128187; 终端用户: <code>${USER_NAME}</code> / <code>${USER_PASS}</code></p>
-            <p style="margin-top:8px">&#128193; 文件管理: <code>${DUFS_USER}</code> / <code>${DUFS_PASS}</code></p>
-            <p style="margin-top:8px">&#128161; 用户已加入 sudo 组，免密码执行 sudo</p>
-        </div>
     </div>
 </body>
 </html>
@@ -219,17 +197,7 @@ TTYD_PID=$!
 # 启动 dufs（文件服务器，支持上传/下载/认证）
 echo "[*] 启动 dufs 文件服务..."
 # 使用 --path-prefix /files 适配反向代理
-# 使用 -A 参数设置认证用户
-# 使用 --allow-upload --allow-delete 允许上传删除
-dufs -p 5000 \
-    --path-prefix /files \
-    -A "${DUFS_USER}:${DUFS_PASS}" \
-    --allow-upload \
-    --allow-delete \
-    --allow-search \
-    --allow-symlink \
-    --allow-archive \
-    /srv/dufs &
+dufs -p 5000 --allow-upload -a $USER_NAME:$USER_PASS@/:rw &
 DUFS_PID=$!
 
 # 等待内部服务启动
