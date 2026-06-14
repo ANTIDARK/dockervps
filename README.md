@@ -1,58 +1,64 @@
----
+## 方案架构
 
-## 架构设计
-
-```
-用户浏览器 ──► 平台映射端口 ──► Caddy :80
-                                      │
-                    ├─► / ──────────► 导航页 (静态HTML)
-                    ├─► /ttyd ──────► TTYD (localhost:7681)
-                    └─► /files ─────► File Browser (localhost:8080)
-                    
-SSHD 在容器内部运行，不暴露端口
-```
-
-**只暴露 1 个端口（80）**，所有服务通过路径区分。
-
----
-
-## 访问路径
-
-| 路径 | 服务 | 说明 |
+| 组件 | 变更 | 说明 |
 |------|------|------|
-| `/` | **导航页** | 美观的入口页面，点击跳转各服务 |
-| `/ttyd` | **Web 终端** | TTYD 浏览器终端，登录后可用 bash |
-| `/files` | **文件管理** | File Browser，支持上传/下载/编辑 |
+| **文件管理** |  dufs | 单文件 Rust 编写，更轻量，支持上传/下载/认证 |
+| **TTYD 认证** | 网页ssh | 通过环境变量 `USER_NAME`/`USER_PASS`修改 |
 
 ---
 
-## 默认凭证
+## 环境变量配置
 
-| 服务 | 用户名 | 密码 |
+| 变量 | 默认值 | 用途 |
 |------|--------|------|
-| Root（TTYD 登录） | `root` | `root123`（可自定义） |
-| File Browser | `admin` | `admin` |
+| `USER_NAME` | `admin` | TTYD 网页终端登录用户名 |
+| `USER_PASS` | `admin123` | TTYD 网页终端登录密码 |
+| `DUFS_USER` | `admin` | dufs 文件管理登录用户名 |
+| `DUFS_PASS` | `admin123` | dufs 文件管理登录密码 |
 
 ---
 
-## 使用方法
+## 使用方式
 
 ```bash
-# 1. 下载两个文件到同一目录
-# 2. 构建并启动
+# 构建并启动
 docker compose up -d --build
 
-# 3. 访问 http://你的IP:8080 即可看到导航页
+# 或自定义环境变量
+USER_NAME=myuser USER_PASS=mypass DUFS_USER=fileadmin DUFS_PASS=filepass docker compose up -d --build
+```
+
+**访问地址**：
+- 导航页：`http://你的IP:8080/`
+- Web 终端：`http://你的IP:8080/ttyd/`（输入 USER_NAME / USER_PASS）
+- 文件管理：`http://你的IP:8080/files/`（输入 DUFS_USER / DUFS_PASS）
+
+---
+
+## 终端内使用 sudo
+
+TTYD 登录后，用户已配置免密码 sudo：
+```bash
+$ whoami
+admin
+$ sudo apt-get update   # 不需要输入密码
+$ sudo su               # 直接切换到 root
 ```
 
 ---
 
-## 关于 SSH 的使用
+## dufs 功能
 
-由于只能暴露 1 个端口，SSH（22 端口）**不直接暴露**。有两种使用方式：
-
-1. **通过 TTYD 网页终端**：访问 `/ttyd`，用 `root/root123` 登录后，在容器内直接使用 `ssh localhost` 或直接用 bash
-2. **如果需要外部 SSH**：可以在平台再申请一个 TCP 端口映射给 22，或配合 Cloudflare Tunnel 等
+| 功能 | 支持 |
+|------|------|
+| 文件浏览 | ✅ |
+| 上传文件 | ✅ |
+| 下载文件 | ✅ |
+| 删除文件 | ✅ |
+| 搜索文件 | ✅ |
+| 创建文件夹 | ✅ |
+| 压缩/解压 | ✅ |
+| 基本认证 | ✅ |
 
 ---
 
@@ -62,9 +68,9 @@ docker compose up -d --build
 |------|----------|
 | SSHD | ~5MB |
 | TTYD | ~10MB |
-| File Browser | ~30MB |
+| dufs | ~15MB |
 | Caddy | ~15MB |
 | Alpine 基础 | ~20MB |
-| **合计** | **~80MB** |
+| **合计** | **~65MB** |
 
 ---
