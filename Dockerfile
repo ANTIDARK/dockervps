@@ -192,7 +192,7 @@ TTYD_PID=$!
 # 启动 dufs（文件服务器，支持上传/下载/认证）
 echo "[*] 启动 dufs 文件服务..."
 # 使用 --path-prefix /files 适配反向代理
-dufs -p 5000 --allow-upload -a $USER_NAME:$USER_PASS@/:rw &
+dufs -p 5000 -A --path-prefix /files -a $USER_NAME:$USER_PASS@/:rw &
 DUFS_PID=$!
 
 # 等待内部服务启动
