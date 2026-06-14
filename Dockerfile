@@ -11,7 +11,6 @@ RUN apk add --no-cache \
     tzdata \
     bash \
     tar \
-    sudo \
     unzip \
     && rm -rf /var/cache/apk/*
 
@@ -58,22 +57,6 @@ echo "  sudo 权限   : 免密码 sudo"
 echo "========================================"
 echo ""
 
-# 创建自定义用户（如果不存在）
-if ! id "${USER_NAME}" &>/dev/null; then
-    echo "[*] 创建用户 ${USER_NAME}..."
-    adduser -D -s /bin/bash "${USER_NAME}"
-    echo "${USER_NAME}:${USER_PASS}" | chpasswd
-
-    # 加入 sudo 组并配置免密码 sudo
-    adduser "${USER_NAME}" wheel 2>/dev/null || true
-    echo "${USER_NAME} ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
-
-    echo "[*] 用户 ${USER_NAME} 创建完成，已配置免密码 sudo"
-else
-    echo "[*] 用户 ${USER_NAME} 已存在，更新密码..."
-    echo "${USER_NAME}:${USER_PASS}" | chpasswd
-fi
-
 # 生成 Caddy 配置文件
 cat > /etc/caddy/Caddyfile << CADDYCFG
 {
@@ -90,6 +73,9 @@ cat > /etc/caddy/Caddyfile << CADDYCFG
 
     # TTYD 网页终端（直接运行 bash，使用 Caddy 基础认证）
     handle /ttyd/* {
+        basicauth {
+            ${USER_NAME} $(caddy hash-password --plaintext "${USER_PASS}")
+        }
         reverse_proxy localhost:7681 {
             header_up Host {host}
             header_up X-Real-IP {remote}
@@ -200,7 +186,7 @@ echo "[*] 启动 SSHD 服务（内部 127.0.0.1:22）..."
 
 # 启动 TTYD（直接运行 bash，使用 Caddy 基础认证）
 echo "[*] 启动 TTYD 服务..."
-ttyd -p 7681 --base-path /ttyd /bin/login &
+ttyd -W -p 7681 --base-path /ttyd /bin/bash &
 TTYD_PID=$!
 
 # 启动 dufs（文件服务器，支持上传/下载/认证）
