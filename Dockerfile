@@ -108,12 +108,12 @@ RUN printf '%s\n' \
     '        <h1>Server Toolbox</h1>' \
     '        <p class="subtitle">网页端服务器管理工具集</p>' \
     '        <div class="cards">' \
-    '            <a href="/ttyd" class="card">' \
+    '            <a href="/ttyd/" class="card">' \
     '                <div class="icon">&#128187;</div>' \
     '                <h2>Web 终端</h2>' \
     '                <p>基于 TTYD 的浏览器终端，可直接操作服务器命令行</p>' \
     '            </a>' \
-    '            <a href="/files" class="card">' \
+    '            <a href="/files/" class="card">' \
     '                <div class="icon">&#128193;</div>' \
     '                <h2>文件管理</h2>' \
     '                <p>基于 File Browser 的网页文件管理器，支持上传下载编辑</p>' \
@@ -218,7 +218,7 @@ echo "[*] 启动 SSHD 服务（内部）..."
 
 # 启动 TTYD（监听 localhost:7681，通过 Caddy 反向代理暴露）
 echo "[*] 启动 TTYD 服务..."
-ttyd -p 7681 -W --base-path /ttyd /bin/login &
+ttyd -p 7681 --base-path /ttyd /bin/login &
 
 # 启动 File Browser（监听 localhost:8080，通过 Caddy 反向代理暴露）
 echo "[*] 启动 File Browser..."
