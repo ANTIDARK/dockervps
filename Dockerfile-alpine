@@ -2,7 +2,8 @@
 FROM alpine:edge
 
 # 安装必要软件
-RUN apk add --no-cache \
+RUN apk update && apk upgrade && \
+    apk add --no-cache \
     openssh-server \
     openssh-client \
     ttyd \
