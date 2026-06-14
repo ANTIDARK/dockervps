@@ -22,11 +22,12 @@ RUN ssh-keygen -A \
     && echo "ListenAddress 127.0.0.1" >> /etc/ssh/sshd_config
 
 # 下载并安装 dufs（单文件静态服务器，支持上传/下载/认证）
-# 使用固定版本 v0.43.0
-RUN curl -fsSL -o /usr/local/bin/dufs.tar.gz \
+# 使用固定版本
+RUN curl -fsSL -o /tmp/dufs.tar.gz \
     "https://github.com/sigoden/dufs/releases/download/v0.46.0/dufs-v0.46.0-x86_64-unknown-linux-musl.tar.gz" && \
-    tar -xzf /usr/local/bin/dufs.tar.gz && \
-    chmod +x /usr/local/bin/dufs
+    tar -xzf /tmp/dufs.tar.gz -C /usr/local/bin/ && \
+    chmod +x /usr/local/bin/dufs && \
+    rm /tmp/dufs.tar.gz
 
 # 创建启动脚本（运行时处理用户创建和配置）
 RUN cat > /start.sh << 'EOF'
