@@ -57,11 +57,6 @@ echo "  sudo 权限   : 免密码 sudo"
 echo "========================================"
 echo ""
 
-
-# 创建文件管理目录
-mkdir -p /srv/dufs
-chown -R "${USER_NAME}:${USER_NAME}" /srv/dufs
-
 # 生成 Caddy 配置文件
 cat > /etc/caddy/Caddyfile << CADDYCFG
 {
