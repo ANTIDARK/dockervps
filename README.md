@@ -2,8 +2,9 @@
 
 | 组件 | 变更 | 说明 |
 |------|------|------|
-| **文件管理** |  dufs | 单文件 Rust 编写，更轻量，支持上传/下载/认证 |
+| **caddy反向代理** |  caddy | 反向代理 |
 | **TTYD 认证** | 网页ssh | 通过环境变量 `USER_NAME`/`USER_PASS`修改 |
+| **文件管理** |  dufs | 单文件 Rust 编写，更轻量，支持上传/下载/认证 |
 
 ---
 
@@ -29,9 +30,9 @@ USER_NAME=myuser USER_PASS=mypass DUFS_USER=fileadmin DUFS_PASS=filepass docker 
 ```
 
 **访问地址**：
-- 导航页：`http://你的IP:8080/`
-- Web 终端：`http://你的IP:8080/ttyd/`（输入 USER_NAME / USER_PASS）
-- 文件管理：`http://你的IP:8080/files/`（输入 DUFS_USER / DUFS_PASS）
+- 导航页：`http://你的IP:80/`
+- Web 终端：`http://你的IP:80/ttyd/`（输入 USER_NAME / USER_PASS）
+- 文件管理：`http://你的IP:80/files/`（输入 DUFS_USER / DUFS_PASS）
 
 ---
 
@@ -43,8 +44,9 @@ $ whoami
 admin
 $ sudo apt-get update   # 不需要输入密码
 $ sudo su               # 直接切换到 root
-```
 
+```
+ 
 ---
 
 ## dufs 功能
